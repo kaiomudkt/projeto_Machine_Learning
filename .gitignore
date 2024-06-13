@@ -1,3 +1,11 @@
 .env
 **/.env
 **/*.zip
+dataset/**
+.cache/**
+history.sqlite
+.local/**
+.config/**
+.ipython/**
+.npm/**
+exemplo/teste_document-classification-project-ocr.ipynb

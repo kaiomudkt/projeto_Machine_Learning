@@ -1,9 +1,9 @@
 version: '3'
 
 services:
-  jupyter:
+  jupyter-ml-documentos:
     image: quay.io/jupyter/scipy-notebook:2024-03-14
-    container_name: jupyter
+    container_name: jupyter-ml-documentos
     ports:
       - 8888:8888
     volumes:
@@ -12,11 +12,5 @@ services:
       - .env
     command: >
       /bin/bash -c "
-      if [ ! -d /home/jovyan/.git ]; then
-          git config --global user.name ${GITHUB_USERNAME} &&
-          git config --global user.email ${GITHUB_USEREMAIL} &&
-          git config --global credential.helper store &&
-          git clone https://${GITHUB_USER}:${GITHUB_TOKEN}${GITHUB_REPO} .
-      fi &&
       jupyter notebook --ip=0.0.0.0 --port=8888 --allow-root
       "
