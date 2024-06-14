@@ -13,3 +13,4 @@ keras.*
 .jupyter/**
 nltk_data/**
 **.parquet
+**.pickle
