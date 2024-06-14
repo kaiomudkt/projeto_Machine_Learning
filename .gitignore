@@ -10,3 +10,6 @@ history.sqlite
 .npm/**
 exemplo/teste_document-classification-project-ocr.ipynb
 keras.*
+.jupyter/**
+nltk_data/**
+**.parquet
