@@ -9,3 +9,4 @@ history.sqlite
 .ipython/**
 .npm/**
 exemplo/teste_document-classification-project-ocr.ipynb
+keras.*

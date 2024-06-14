@@ -2,7 +2,9 @@ version: '3'
 
 services:
   jupyter-ml-documentos:
-    image: quay.io/jupyter/scipy-notebook:2024-03-14
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: jupyter-ml-documentos
     ports:
       - 8888:8888
