@@ -15,5 +15,5 @@ nltk_data/**
 **.parquet
 **.pickle
 **/__pycache__/**
-docs-sm/**
+**/docs-sm/**
 **/kaggle.json
