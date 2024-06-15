@@ -14,3 +14,4 @@ keras.*
 nltk_data/**
 **.parquet
 **.pickle
+**/__pycache__/**
