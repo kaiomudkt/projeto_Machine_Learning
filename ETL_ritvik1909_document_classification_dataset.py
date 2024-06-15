@@ -21,22 +21,13 @@ import nltk
 nltk.download('punkt')
 nltk.download('wordnet')
 nltk.download('stopwords')
-import subprocess
-import sys
 
-def install(package):
-    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-
-if __name__ == "__main__":
-    # Instalar o pacote nltk
-    install("nltk")
-
-
-
-# Definição de Classes, opções de target
-class_labels = { 'email':0, 'resume':1, 'scientific_publication':2 }
-
-
+def get_class_labels():
+    """
+    Definição de Classes, opções de target
+    """
+    class_labels = { 'email':0, 'resume':1, 'scientific_publication':2 }
+    return class_labels
 
 def lowercase_and_remove_special_characters(text: str) -> str:
     """
@@ -151,7 +142,9 @@ def process_images(path: str)-> pd.DataFrame:
 
 def process_dataset(path: str, parquet_file: str)-> pd.DataFrame:
     """
-    processa todo o dataset de imagens extensão.png covertando para dataframe pandas já pronto para usar no treinamento do modelo
+    carrega todo o dataset,
+    pre processa o dataset de imagens extensão.png covertando para dataframe pandas,
+    Dataframe já pronto para usar no treinamento do modelo
     """
     # Verifica se o arquivo Parquet já existe
     if os.path.exists(parquet_file):
