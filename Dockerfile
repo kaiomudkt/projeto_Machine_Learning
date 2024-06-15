@@ -14,4 +14,7 @@ COPY requirements.txt .
 # Instala as dependências listadas no requirements.txt
 RUN pip install --no-cache-dir -r requirements.txt
 
+# Instala Kaggle, para poder fazer download do dataset
+RUN pip install --upgrade --force-reinstall --no-deps kaggle
+
 USER jovyan

@@ -8,10 +8,12 @@ history.sqlite
 .config/**
 .ipython/**
 .npm/**
-exemplo/teste_document-classification-project-ocr.ipynb
+exemplo/**
 keras.*
 .jupyter/**
 nltk_data/**
 **.parquet
 **.pickle
 **/__pycache__/**
+docs-sm/**
+**/kaggle.json
