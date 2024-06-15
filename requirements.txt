@@ -1,2 +1,2 @@
-pip install pytesseract
-pip install nltk
+pytesseract
+nltk
