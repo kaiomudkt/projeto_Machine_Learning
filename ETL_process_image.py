@@ -7,18 +7,18 @@
 # o processamento considera que seu dataset esta no seguinte formado
 # diretório raiz do dataset, e cada sub diretório, é uma classe de imagem, com suas respectivas 'n' quantidade de imagens
 # a classe significa o tipo da imagem, ou seja, target
-
 import os
 import pandas as pd
 import numpy as np
 import cv2 as cv
 import math
+import pickle
 import pytesseract as pt
 from scipy import ndimage
 from PIL import Image, ImageDraw
 # importa arquivo interno
 from ETL_process_text import main as preprocess_text
-from typing import List, Tuple
+from typing import List, Tuple, Union, Dict
 
 def correct_image_rotation(img: np.ndarray) -> np.ndarray:
     """
@@ -40,7 +40,7 @@ def correct_image_rotation(img: np.ndarray) -> np.ndarray:
             img = ndimage.rotate(img, median_angle)
     return img
 
-def extract_text_ocr(img: np.ndarray) -> pd.DataFrame:
+def extract_text_ocr(img: np.ndarray) -> dict:
     """
     Realiza OCR na imagem e retorna um DataFrame com os resultados.
     Args:
@@ -48,7 +48,8 @@ def extract_text_ocr(img: np.ndarray) -> pd.DataFrame:
     Returns:
     - DataFrame com os resultados do OCR.
     """
-    return pt.image_to_data(img, output_type='data.frame')
+    return pt.image_to_data(img, output_type=pt.Output.DICT)
+    # return pt.image_to_data(img, output_type='data.frame')
 
 def filter_low_confidence_words(ocr_result: pd.DataFrame, confidence_threshold: int = 75) -> pd.DataFrame:
     """
@@ -96,7 +97,7 @@ def convert_ocr_result_to_text(ocr_result: pd.DataFrame) -> str:
     text = ' '.join(filtered_word_list)
     return text
 
-def preprocess_and_extract_text(img: np.ndarray) -> str:
+def preprocess_and_extract_text(img: np.ndarray) -> Tuple[str, Dict]:
     """
     Realiza OCR em uma imagem e retorna o texto extraído.
     Args:
@@ -105,26 +106,38 @@ def preprocess_and_extract_text(img: np.ndarray) -> str:
     - Texto extraído da imagem.
     """
     # Extrai textos da imagem via OCR
-    ocr_result = extract_text_ocr(img)
+    dict_ocr_result = extract_text_ocr(img)
+    # Converter o dicionário em um DataFrame
+    df_ocr_result = pd.DataFrame(dict_ocr_result)
+    # TODO:
+    df_ocr_result = df_ocr_result.dropna().reset_index(drop=True)
+    float_cols = df_ocr_result.select_dtypes('float').columns
+    df_ocr_result[float_cols] = df_ocr_result[float_cols].round(0).astype(int)
+    df_ocr_result = df_ocr_result.replace(r'^\s*$', np.nan, regex=True)
+    
+
     # Filtra as palavras que têm uma confiança (conf) menor que 75
-    ocr_result = filter_low_confidence_words(ocr_result)
+    df_ocr_result = filter_low_confidence_words(df_ocr_result)
     # Calcula a média das confidências (result_mean)
-    result_mean = calculate_mean_confidence(ocr_result)
+    result_mean = calculate_mean_confidence(df_ocr_result)
     # Aplica pré-processamento na imagem, para tentar melhorar a qualidade do OCR
     img_blur = apply_threshold_and_bilateral_filter(img)
     # Realiza OCR na imagem pré-processada
-    result_after_preproc = extract_text_ocr(img_blur)
+    dict_result_after_preproc = extract_text_ocr(img_blur)
+    df_result_after_preproc = pd.DataFrame(dict_result_after_preproc)
     # Filtra as palavras com confiança menor que 75
-    result_after_preproc = filter_low_confidence_words(result_after_preproc)
+    df_result_after_preproc = filter_low_confidence_words(df_result_after_preproc)
     # Calcula a média das confidências (result_after_preproc_mean)
-    result_after_preproc_mean = calculate_mean_confidence(result_after_preproc)
+    result_after_preproc_mean = calculate_mean_confidence(df_result_after_preproc)
     # Compara a média das confidências antes e depois do pré-processamento
     if result_mean < result_after_preproc_mean:
         # entr as duas imagens, usa textos extraidos da imagem que tiver a melhor confiança 
-        ocr_result = result_after_preproc
+        df_ocr_result = df_result_after_preproc
+        dict_ocr_result = dict_result_after_preproc
+    # TODO: 
     # Converte o resultado do OCR em uma string de texto
-    text = convert_ocr_result_to_text(ocr_result)
-    return text
+    text = convert_ocr_result_to_text(df_ocr_result)
+    return text, dict_ocr_result
 
 def process_image(image_path: str) -> tuple[str, str]:
     """
@@ -132,19 +145,22 @@ def process_image(image_path: str) -> tuple[str, str]:
     Args:
     - image_path: Caminho completo para a imagem a ser processada.
     Returns:
-    - Uma tupla contendo o texto extraído da imagem e classe da imagem.
+    - Uma tupla contendo o texto extraído da imagem e classe da imagem, e dict_ocr_result.
     """
     image_file = Image.open(image_path)
     img = np.asarray(image_file)
     # Detectar e corrigir inclinação da imagem
     img = correct_image_rotation(img)
     # Extrai texto da imagem via OCR
-    ocr_text = preprocess_and_extract_text(img)
+    text, dict_ocr_result = preprocess_and_extract_text(img)
     # Pré-processar o texto extraído
-    preprocessed_text = preprocess_text(ocr_text)
+    preprocessed_text = preprocess_text(text)
     # Extrair o classe da imagem a partir do nome diretório que a imagem pertence
     class_img = os.path.basename(os.path.dirname(image_path))
-    return preprocessed_text, class_img
+    return preprocessed_text, class_img, dict_ocr_result
+
+def serialize_df(df):
+    return pickle.dumps(df)
 
 def process_images(path_dataset: str, required_folders: list[str]) -> pd.DataFrame:
     """
@@ -160,9 +176,8 @@ def process_images(path_dataset: str, required_folders: list[str]) -> pd.DataFra
         if name_subdir in required_folders:
             print(f"processando arquivos do diretório {subdir} ... ")
             for file in files:
-                img_text, class_img = process_image(os.path.join(subdir, file))
-                # TODO: alterar nome 'doc_type' para class_img
-                data.append({'text': img_text, 'doc_type': class_img, 'name': file})   
+                img_text, class_img, dict_ocr_result = process_image(os.path.join(subdir, file))
+                data.append({'text': img_text, 'class_img': class_img, 'name': file, 'dict_ocr': dict_ocr_result})   
     df = pd.DataFrame(data)        
     return df
 
@@ -187,7 +202,8 @@ def draw_bounding_boxes(image: Image, ocr_df: pd.DataFrame) -> Image:
     Desenha caixas delimitadoras em uma imagem com base nos resultados do OCR.
     Args:
     - image: Imagem PIL onde as caixas delimitadoras serão desenhadas.
-    - ocr_df: DataFrame do pandas contendo as colunas 'left', 'top', 'width', 'height' com as coordenadas das caixas delimitadoras.
+    - ocr_df: df bruto extraido da imagem via OCR
+    - coordinates: DataFrame do pandas contendo as colunas 'left', 'top', 'width', 'height'.
     Returns:
     - Imagem PIL com as caixas delimitadoras desenhadas.
     """
@@ -199,6 +215,9 @@ def draw_bounding_boxes(image: Image, ocr_df: pd.DataFrame) -> Image:
         x, y, w, h = tuple(row)  # A linha vem no formato (left, top, width, height)
         actual_box = (x, y, x+w, y+h)  # Transformamos para (left, top, left+width, top+height) para obter a caixa real
         actual_boxes.append(actual_box)
+    # Verifica o modo da imagem e converte para 'RGB' se necessário
+    if image.mode != "RGB":
+        image = image.convert("RGB")
     # Desenha as caixas delimitadoras na imagem
     draw = ImageDraw.Draw(image, "RGB")
     for box in actual_boxes:
