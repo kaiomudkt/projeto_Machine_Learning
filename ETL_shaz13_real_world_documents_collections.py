@@ -39,7 +39,6 @@ def correct_image_rotation(img: np.ndarray) -> np.ndarray:
             img = ndimage.rotate(img, median_angle)
     return img
 
-
 def perform_ocr(img: np.ndarray) -> str:
     """
     Realiza OCR em uma imagem e retorna o texto extraído.
@@ -96,8 +95,6 @@ def process_image(image_path: str) -> tuple[str, str]:
     doc_type = os.path.basename(os.path.dirname(image_path))
     return preprocessed_text, doc_type
 
-
-
 def process_images(path_dataset: str, required_folders: list[str]) -> pd.DataFrame:
     """
     Processa imagens em um diretório, realizando OCR e pré-processamento.
@@ -116,6 +113,21 @@ def process_images(path_dataset: str, required_folders: list[str]) -> pd.DataFra
     df = pd.DataFrame(data)        
     return df
 
+def get_dataframe(path_dataset: str, path_df_parquet: str)-> pd.DataFrame:
+    """
+    carrega todo o dataset,
+    pre processa o dataset de imagens extensão.png covertando para dataframe pandas,
+    Dataframe já pronto para usar no treinamento do modelo
+    """
+    # Verifica se o arquivo Parquet já existe
+    if os.path.exists(path_df_parquet):
+        # Carrega os dados existentes se o arquivo Parquet já existir
+        df = pd.read_parquet(path_df_parquet)
+    else:
+        df = process_images(path_dataset)
+        # Salva o DataFrame em arquivo Parquet para uso futuro não precisar reprocessar e ja pegar pronto
+        df.to_parquet(path_df_parquet, index=False)
+    return df
 
 def main() -> pd.DataFrame:
     """
@@ -131,17 +143,9 @@ def main() -> pd.DataFrame:
         process_zip_file(zip_file, extract_to)
     path_dataset = "./dataset/real_world_documents_collections/docs-sm"
     path_df_parquet = './df_shaz13_real_world_documents_collections.parquet'
-    if os.path.exists(path_df_parquet):
-        df = pd.read_parquet(path_df_parquet)
-    else:
-        required_folders = ['form','resume','letter','invoice', 'questionnaire']
-        # extrai textos das imagens, processa, gera dataframe pandas
-        df = process_images(path_dataset, required_folders)
-        df.to_parquet(path_df_parquet, index=False)
+    df = get_dataframe(path_dataset, path_df_parquet)
     return df
-
 
 # Executar a função principal
 if __name__ == "__main__":
     df = main()
-
