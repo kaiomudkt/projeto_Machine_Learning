@@ -161,7 +161,7 @@ def process_images(path_dataset: str, required_folders: list[str]) -> pd.DataFra
             for file in files:
                 img_text, class_img = process_image(os.path.join(subdir, file))
                 # TODO: alterar nome 'doc_type' para class_img
-                data.append({'text': img_text, 'doc_type': class_img})   
+                data.append({'text': img_text, 'doc_type': class_img, 'name': file})   
     df = pd.DataFrame(data)        
     return df
 
@@ -180,3 +180,31 @@ def process_dataset(path_dataset: str, path_df_parquet: str, required_folders: l
         # Salva o DataFrame em arquivo Parquet para uso futuro não precisar reprocessar e ja pegar pronto
         df.to_parquet(path_df_parquet, index=False)
     return df
+
+
+from typing import List, Tuple
+import pandas as pd
+from PIL import Image, ImageDraw
+
+def draw_bounding_boxes(image: Image, ocr_df: pd.DataFrame) -> Image:
+    """
+    Desenha caixas delimitadoras em uma imagem com base nos resultados do OCR.
+    Args:
+    - image: Imagem PIL onde as caixas delimitadoras serão desenhadas.
+    - ocr_df: DataFrame do pandas contendo as colunas 'left', 'top', 'width', 'height' com as coordenadas das caixas delimitadoras.
+    Returns:
+    - Imagem PIL com as caixas delimitadoras desenhadas.
+    """
+    # Extrai as coordenadas das caixas delimitadoras
+    coordinates = ocr_df[['left', 'top', 'width', 'height']]
+    actual_boxes: List[Tuple[int, int, int, int]] = []
+    # Converte as coordenadas em caixas delimitadoras reais
+    for idx, row in coordinates.iterrows():
+        x, y, w, h = tuple(row)  # A linha vem no formato (left, top, width, height)
+        actual_box = (x, y, x+w, y+h)  # Transformamos para (left, top, left+width, top+height) para obter a caixa real
+        actual_boxes.append(actual_box)
+    # Desenha as caixas delimitadoras na imagem
+    draw = ImageDraw.Draw(image, "RGB")
+    for box in actual_boxes:
+        draw.rectangle(box, outline='red')
+    return image
