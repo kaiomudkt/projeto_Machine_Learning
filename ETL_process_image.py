@@ -10,14 +10,15 @@
 
 import os
 import pandas as pd
-from PIL import Image
 import numpy as np
 import cv2 as cv
 import math
-from scipy import ndimage
 import pytesseract as pt
+from scipy import ndimage
+from PIL import Image, ImageDraw
 # importa arquivo interno
 from ETL_process_text import main as preprocess_text
+from typing import List, Tuple
 
 def correct_image_rotation(img: np.ndarray) -> np.ndarray:
     """
@@ -180,11 +181,6 @@ def process_dataset(path_dataset: str, path_df_parquet: str, required_folders: l
         # Salva o DataFrame em arquivo Parquet para uso futuro não precisar reprocessar e ja pegar pronto
         df.to_parquet(path_df_parquet, index=False)
     return df
-
-
-from typing import List, Tuple
-import pandas as pd
-from PIL import Image, ImageDraw
 
 def draw_bounding_boxes(image: Image, ocr_df: pd.DataFrame) -> Image:
     """
