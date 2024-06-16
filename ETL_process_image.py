@@ -1,3 +1,13 @@
+# OBJETIVOS DESTE ARQUIVO
+# processa imagens (png, jpg)
+# extrai textos das imagem via OCR
+# processa textos
+# gera dataframe para ser usado em uma ML
+
+# o processamento considera que seu dataset esta no seguinte formado
+# diretório raiz do dataset, e cada sub diretório, é uma classe de imagem, com suas respectivas 'n' quantidade de imagens
+# a classe significa o tipo da imagem, ou seja, target
+
 import os
 import pandas as pd
 from PIL import Image
