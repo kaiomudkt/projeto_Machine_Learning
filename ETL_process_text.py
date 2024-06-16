@@ -1,4 +1,4 @@
-# funções base para processamento de texto para input em ML
+# Apenas funções base de processamento de texto, com foco de gerar input para ML
 
 import os
 from typing import List
@@ -75,8 +75,25 @@ def lemmatize_tokens(tokens: List[str]) -> List[str]:
     lemmatized_tokens = [lemmatizer.lemmatize(token) for token in tokens]
     return lemmatized_tokens
 
-def preprocess_text(text: str) -> str:
+
+#def process_text_from_image(label_path: str, file_name: str) -> str:
+#    """
+#    - carrega uma imagem.png
+#    - extrai o texto da imagem via OCR
+#    - realiza o pre processamento do texto
+#    retorna o texto ja pre processado
+#    """
+#    # Carrega a imagem
+#    image = Image.open(os.path.join(label_path, file_name))
+#    # Usa Tesseract OCR para extrair o texto da imagem
+#    text = pytesseract.image_to_string(image)
+#    # Executa o pré-processamento do texto
+#    processed_text = preprocess_text(text)
+#    return processed_text
+
+def main(text: str) -> str:
     """
+    cleaning
     Realiza o pré-processamento completo do texto, incluindo minúsculas,
     remoção de caracteres especiais, tokenização, remoção de pontuações
     e stopwords, e lematização.
@@ -91,28 +108,3 @@ def preprocess_text(text: str) -> str:
     tokens = remove_punctuation_and_stopwords(tokens)
     final_text = lemmatize_tokens(tokens)
     return " ".join(final_text)
-
-def process_text_from_image(label_path: str, file_name: str) -> str:
-    """
-    - carrega uma imagem.png
-    - extrai o texto da imagem via OCR
-    - realiza o pre processamento do texto
-    retorna o texto ja pre processado
-    """
-    # Carrega a imagem
-    image = Image.open(os.path.join(label_path, file_name))
-    # Usa Tesseract OCR para extrair o texto da imagem
-    text = pytesseract.image_to_string(image)
-    # Executa o pré-processamento do texto
-    processed_text = preprocess_text(text)
-    return processed_text
-
-
-
-
-
-
-
-
-
-
