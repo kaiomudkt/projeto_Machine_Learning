@@ -1,3 +1,5 @@
 pytesseract
 nltk
 kaggle
+opencv-python-headless
+pillow

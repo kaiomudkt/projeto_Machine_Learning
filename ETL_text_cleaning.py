@@ -1,6 +1,5 @@
-# carrega dataset com_datasets_ritvik1909_document-classification-dataset e gera Dataframe pandas
+# funções base para processamento de texto para input em ML
 
-import pandas as pd
 import os
 from typing import List
 # NLTK (Natural Language Toolkit) 
@@ -21,13 +20,6 @@ import nltk
 nltk.download('punkt')
 nltk.download('wordnet')
 nltk.download('stopwords')
-
-def get_class_labels():
-    """
-    Definição de Classes, opções de target
-    """
-    class_labels = { 'email':0, 'resume':1, 'scientific_publication':2 }
-    return class_labels
 
 def lowercase_and_remove_special_characters(text: str) -> str:
     """
@@ -100,7 +92,7 @@ def preprocess_text(text: str) -> str:
     final_text = lemmatize_tokens(tokens)
     return " ".join(final_text)
 
-def process_image(label_path: str, file_name: str) -> str:
+def process_text_from_image(label_path: str, file_name: str) -> str:
     """
     - carrega uma imagem.png
     - extrai o texto da imagem via OCR
@@ -114,58 +106,6 @@ def process_image(label_path: str, file_name: str) -> str:
     # Executa o pré-processamento do texto
     processed_text = preprocess_text(text)
     return processed_text
-
-def process_images(path: str) -> pd.DataFrame:
-    """
-    retorna DF pandas, com duas colunas 'Text' e 'Label';
-    'Text': representa os textos extraido via OCR da imagem
-    'Label' representa a classe/categoria/tipo/label original desta imagem
-    """
-    # Diretório com as imagens
-    image_folder = os.listdir(path)
-    # Lista para armazenar os dados antes de criar o DataFrame
-    data = []
-    # Itera sobre cada diretório de classe (label_dir) ['email', 'resume','scientific_publication']
-    for label_dir in image_folder:
-        # Caminho completo para o diretório atual de documentos
-        label_path = os.path.join(path, label_dir)
-        # Itera sobre os arquivos (imagem.png) dentro do diretório
-        for file_name in os.listdir(label_path):
-            processed_text = process_image(label_path, file_name)
-            # Obtém o rótulo numérico correspondente ao tipo de documento (label)
-            label = class_labels[label_dir]
-            # Adiciona um dicionário à lista de dados
-            data.append({'Text': processed_text, 'Label': label})
-    # Cria o DataFrame final a partir da lista de dicionários
-    df = pd.DataFrame(data)        
-    return df
-
-def process_dataset(path: str, parquet_file: str)-> pd.DataFrame:
-    """
-    carrega todo o dataset,
-    pre processa o dataset de imagens extensão.png covertando para dataframe pandas,
-    Dataframe já pronto para usar no treinamento do modelo
-    """
-    # Verifica se o arquivo Parquet já existe
-    if os.path.exists(parquet_file):
-        # Carrega os dados existentes se o arquivo Parquet já existir
-        df = pd.read_parquet(parquet_file)
-    else:
-        df = process_images(path)
-        # Salva o DataFrame em arquivo Parquet para uso futuro não precisar reprocessar e ja pegar pronto
-        df.to_parquet(parquet_file, index=False)
-    return df
-
-def main():
-    # Caminho para o diretório contendo as imagens a serem processadas
-    path = "dataset/www-kaggle-com_datasets_ritvik1909_document-classification-dataset"
-    # apos processar as imagens, Armazenar dados
-    parquet_file = "df_document_texts.parquet"
-    # Chamada da função para processar o dataset e obter o DataFrame resultante
-    df = process_dataset(path, parquet_file)
-    return df
-
-
 
 
 
