@@ -17,3 +17,4 @@ nltk_data/**
 **/__pycache__/**
 **/docs-sm/**
 **/kaggle.json
+**.pkl
