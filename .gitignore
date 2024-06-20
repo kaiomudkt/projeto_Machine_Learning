@@ -18,3 +18,4 @@ nltk_data/**
 **/docs-sm/**
 **/kaggle.json
 **.pkl
+.ipynb_checkpoints/**
