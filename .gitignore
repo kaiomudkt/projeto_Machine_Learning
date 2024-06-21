@@ -19,3 +19,4 @@ nltk_data/**
 **/kaggle.json
 **.pkl
 .ipynb_checkpoints/**
+**.sav

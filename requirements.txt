@@ -3,3 +3,4 @@ nltk
 kaggle
 opencv-python-headless
 pillow
+spacy
