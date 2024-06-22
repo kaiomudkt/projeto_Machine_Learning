@@ -147,7 +147,7 @@ def preprocess_and_extract_text(img: np.ndarray) -> Tuple[str, Dict]:
     text = convert_ocr_result_to_text(df_ocr_result)
     return text, ocr_dict
 
-def process_image(image_path: str) -> tuple[str, str, Dict]:
+def process_image(image_path: str, make_correct_img_rotation: bool=True) -> tuple[str, str, Dict]:
     """
     Processa uma única imagem, realizando OCR, pré-processamento e extração de texto.
     Args:
@@ -157,8 +157,9 @@ def process_image(image_path: str) -> tuple[str, str, Dict]:
     """
     image_file = Image.open(image_path)
     img = np.asarray(image_file)
-    # Detectar e corrigir inclinação da imagem
-    img = correct_image_rotation(img)
+    if make_correct_img_rotation:
+        # Detectar e corrigir inclinação da imagem
+        img = correct_image_rotation(img)
     # Extrai texto da imagem via OCR
     text, dict_ocr_result_teste = preprocess_and_extract_text(img)
     # Pré-processar o texto extraído
