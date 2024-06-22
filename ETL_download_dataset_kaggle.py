@@ -14,7 +14,7 @@ import os
 import zipfile
 from kaggle.api.kaggle_api_extended import KaggleApi
 
-def download_dataset(link_dataset: str) -> None:
+def download_dataset(link_dataset: str, destination_path: str='.') -> None:
     """
     Baixa o dataset do Kaggle após autenticação.
     Autentica na API do Kaggle usando as credenciais fornecidas no arquivo 
@@ -33,7 +33,7 @@ def download_dataset(link_dataset: str) -> None:
         # Inicializar a API do Kaggle
         api = KaggleApi()
         api.authenticate()
-        api.dataset_download_files(link_dataset, path='.', unzip=False)
+        api.dataset_download_files(link_dataset, path=destination_path, unzip=False)
     except Exception as e:
         print(f'Erro ao realizar download: {e}')
 
@@ -55,6 +55,12 @@ def unzip_file(zip_file_path: str, extract_to: str) -> None:
     else:
         print(f"O arquivo {zip_file_path} não foi encontrado.")
 
+def get_dataset(zip_file_name: str, link_kaggle_dataset: str, path_zip: str, path_dataset: str):
+    if not os.path.exists(zip_file_name):
+        download_dataset(link_kaggle_dataset, path_zip)
+    if os.path.exists(zip_file_name):
+        unzip_file(zip_file_name, path_dataset)
+        
 def main() -> None:
     """
     Função principal que gerencia o fluxo de download e descompactação do dataset.
