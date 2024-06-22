@@ -1,5 +1,25 @@
 # Apenas funções base de processamento de texto, com foco de gerar input para ML
+"""
+Conversão para Minúsculas 
 
+Substituição de Quebras de Linha e Tabulações 
+
+Remoção de Espaços Extras 
+
+Remoção de Números
+
+Remoção de Pontuação 
+
+Tokenização (word_tokenize(text)):
+ - word_tokenize(text) utiliza a função word_tokenize do NLTK para dividir o texto em tokens individuais (palavras e pontuações). Isso é fundamental para trabalhar com o texto em nível de palavra.
+Remoção de Pontuação Adicional e Stopwords
+
+Lemmatização:
+- A lematização é realizada usando o WordNetLemmatizer do NLTK. Cada palavra restante após a remoção de stopwords é lematizada, ou seja, reduzida à sua forma base (lema). Isso ajuda na normalização do texto, reduzindo variações morfológicas e simplificando o vocabulário.
+
+Concatenação dos Tokens:
+- todos os tokens lematizados são unidos em uma única string, onde cada token é separado por um espaço em branco. Esta string processada é então retornada como a saída da função.
+"""
 import os
 from typing import List
 from string import punctuation
