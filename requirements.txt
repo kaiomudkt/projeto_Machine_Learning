@@ -1,6 +1,17 @@
+tensorflow
 pytesseract
 nltk
 kaggle
 opencv-python-headless
 pillow
 spacy
+
+
+contractions
+unidecode
+yellowbrick
+wordcloud
+xgboost
+lightgbm
+catboost
+
