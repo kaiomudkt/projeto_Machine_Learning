@@ -66,6 +66,7 @@ def tokenize_text(text: str) -> List[str]:
     """
     Tokeniza o texto usando NLTK word_tokenize.
     - utiliza a função word_tokenize do NLTK para dividir o texto em tokens individuais (palavras e pontuações). 
+    - tem como objetivo processar uma sentença de texto, aplicando algumas regras específicas para transformar e limpar os tokens resultantes.
     Isso é fundamental para trabalhar com o texto em nível de palavra.
     Args:
         text (str): O texto a ser tokenizado.
