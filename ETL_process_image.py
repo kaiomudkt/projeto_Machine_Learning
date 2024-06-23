@@ -171,7 +171,7 @@ def process_image(image_path: str, make_correct_img_rotation: bool=True) -> tupl
 def serialize_df(df):
     return pickle.dumps(df)
 
-def process_images(path_dataset: str, required_folders: list[str]) -> pd.DataFrame:
+def process_images(path_dataset: str, required_folders: dict) -> pd.DataFrame:
     """
     Processa imagens em um diretório, realizando OCR e pré-processamento.
     Args:
@@ -186,7 +186,7 @@ def process_images(path_dataset: str, required_folders: list[str]) -> pd.DataFra
             print(f"processando arquivos do diretório {subdir} ... ")
             for file in files:
                 img_text, class_img, dict_ocr_result = process_image(os.path.join(subdir, file))
-                data.append({'text': img_text, 'class_img': class_img, 'name': file, 'dict_ocr': dict_ocr_result})   
+                data.append({'text': img_text, 'class_img': class_img, 'name': file, 'dict_ocr': dict_ocr_result, 'class_number': required_folders[name_subdir]})   
     df = pd.DataFrame(data)        
     return df
 
@@ -217,7 +217,7 @@ def draw_bounding_boxes(image: Image, ocr_df: pd.DataFrame) -> Image:
         draw.rectangle(box, outline='red')
     return image
 
-def process_dataset(path_dataset: str, path_df_parquet: str, required_folders: list[str])-> pd.DataFrame:
+def process_dataset(path_dataset: str, path_df_parquet: str, required_folders: dict)-> pd.DataFrame:
     """
     carrega todo o dataset,
     pre processa o dataset de imagens extensão.png covertando para dataframe pandas,
