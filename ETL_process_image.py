@@ -16,9 +16,9 @@ import pickle
 import pytesseract
 from scipy import ndimage
 from PIL import Image, ImageDraw
-# importa arquivo interno
+from typing import List, Tuple, Dict
+# https://github.com/kaiomudkt/projeto_Machine_Learning/blob/main/ETL_process_text.py
 from ETL_process_text import main as preprocess_text
-from typing import List, Tuple, Union, Dict
 
 def correct_image_rotation(img: np.ndarray) -> np.ndarray:
     """
