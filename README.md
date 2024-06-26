@@ -1,5 +1,19 @@
-# projeto_Machine_Learning
+# Como executar o ambiente
 
+### usando docker:
+
+1. limpando de container anteriores
+```bash 
+docker-compose down -v
+```
+2. subindo container 
+```bash
+docker-compose up --build
+```
+3. link jupyter:
+http://127.0.0.1:8888/tree?token=token_gerado
+
+# projeto_Machine_Learning
 
 - LogisticRegression
 - Random Forest Classifier
