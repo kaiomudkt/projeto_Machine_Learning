@@ -11,7 +11,9 @@ docker-compose down -v
 docker-compose up --build
 ```
 3. link jupyter:
-http://127.0.0.1:8888/tree?token=token_gerado
+- http://127.0.0.1:8888/tree?token=token_gerado
+4. abrindo jupyter com Vs Code 
+- precisa apenas escolher o kernel do jupyter e informar o token
 
 # projeto_Machine_Learning
 
