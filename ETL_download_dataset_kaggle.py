@@ -24,7 +24,7 @@ def download_dataset(link_dataset: str, destination_path: str='.') -> None:
     """
     try:
         # Configurar o caminho para o arquivo kaggle.json
-        kaggle_json_path = os.path.expanduser('~/.kaggle/kaggle.json')
+        kaggle_json_path = os.path.expanduser('./.kaggle/kaggle.json')
         # Verificar se o arquivo kaggle.json existe
         if not os.path.exists(kaggle_json_path):
             raise FileNotFoundError(f"O arquivo {kaggle_json_path} não foi encontrado. Certifique-se de que o arquivo kaggle.json está no diretório ~/.kaggle")
@@ -65,12 +65,17 @@ def main() -> None:
     """
     Função principal que gerencia o fluxo de download e descompactação do dataset.
     """
-    zip_file = 'real-world-documents-collections.zip'
-    extract_to = 'dataset/real_world_documents_collections'
+    path_dataset: str = "dataset/www-kaggle-com_datasets_ritvik1909_document-classification-dataset"
+    path_df_parquet: str = './DF_process_dataset_ritvik1909_V2.parquet'
+    path_zip: str = "./dataset/compactados"
+    zip_file: str = f"{path_zip}/document-classification-dataset.zip"
+    
+    link_kaggle_dataset: str = 'ritvik1909/document-classification-dataset' 
+    destination_path: str = "./dataset/compactados"
     # Baixar o dataset
-    download_dataset()
+    download_dataset(link_kaggle_dataset, destination_path)
     # Descompacta o arquivo ZIP
-    unzip_file(zip_file, extract_to)
+    unzip_file(zip_file, path_dataset)
 
 # Executar a função principal
 if __name__ == "__main__":
