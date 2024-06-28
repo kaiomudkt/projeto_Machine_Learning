@@ -20,3 +20,4 @@ nltk_data/**
 **.pkl
 .ipynb_checkpoints/**
 **.sav
+.bash_history
